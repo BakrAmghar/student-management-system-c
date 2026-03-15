@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "etudiant.h"
+#include "file.h"
+#include "utilities.h"
 
 void Menu(){
     printf("\n");
@@ -21,7 +24,7 @@ void Menu(){
 
     printf("\n======== RECHERCHE / INFO ========\n");
     printf("7 -> Rechercher un etudiant par ID\n");
-    printf("8 -> Afficher un etudiant precis\n");
+    printf("8 -> Rechercher un etudiant par NOM\n");
 
 
     printf("\n======== AFFICHAGE / STATS ========\n");
@@ -45,6 +48,7 @@ int main()
  int choix;
  char id[50];
  char nom[50];
+ char buffer[20];
  float moy;
  etudiant *etu;
 
@@ -59,18 +63,24 @@ int main()
     printf("\n");
     printf("                           Made by Bakr Amghar\n");
         Menu();
-        scanf("%d", &choix);
+
+        read_line(buffer,sizeof(buffer));
+        choix = atoi(buffer);
 
         switch(choix){
              case 1:
                 printf("\nID : ");
-                scanf("%s",id);
+                read_line(id, sizeof(id));
+                To_Upper(id);
 
                 printf("Nom : ");
-                scanf("%s",nom);
+                read_line(nom, sizeof(nom));
+                To_Upper(nom);
 
-                printf("Moyenne : ");
-                scanf("%f",&moy);
+             do{printf("Moyenne (Une moyenne valide est entre 0 et 20): ");
+                read_line(buffer, sizeof(buffer));
+                moy = atof(buffer);
+               }while(moy < 0 || moy > 20);
 
                 InsertionTete(id,moy,nom);
                 printf("\nEtudiant ajoute en tete.\n");
@@ -79,13 +89,17 @@ int main()
 
             case 2:
                 printf("\nID : ");
-                scanf("%s",id);
+                read_line(id, sizeof(id));
+                To_Upper(id);
 
                 printf("Nom : ");
-                scanf("%s",nom);
+                read_line(nom, sizeof(nom));
+                To_Upper(nom);
 
-                printf("Moyenne : ");
-                scanf("%f",&moy);
+              do{printf("Moyenne (Une moyenne valide est entre 0 et 20): ");
+                read_line(buffer, sizeof(buffer));
+                moy = atof(buffer);
+               }while(moy < 0 || moy > 20);
 
                 InsertionQueue(id,moy,nom);
                 printf("\nEtudiant ajoute en queue.\n");
@@ -120,7 +134,7 @@ int main()
 
 
             case 8:
-                etu = RechercheID();
+                etu = RechercheNom();
                 AffichagePrecis(etu);
                 Pause();
                 break;

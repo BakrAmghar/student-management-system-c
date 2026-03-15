@@ -22,6 +22,7 @@ void Affichage();
 void CalculeTaille();
 void Moyenne();
 etudiant* RechercheID();
+etudiant* RechercheNom();
 void AffichagePrecis(etudiant *nv);
 void ChangerMoy();
 void ChangerNom();

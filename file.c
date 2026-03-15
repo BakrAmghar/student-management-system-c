@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "file.h"
 #include "etudiant.h"
+#include "utilities.h"
 
 // Save to file
 void SauvegarderListe(){

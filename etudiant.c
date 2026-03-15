@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "etudiant.h"
+#include "utilities.h"
 
 // Global pointers
 etudiant *head = NULL;
@@ -10,7 +11,6 @@ etudiant *queue = NULL;
 // Pause function
 void Pause(){
     printf("\nAppuyez sur ENTER pour continuer...");
-    getchar();
     getchar();
 }
 
@@ -106,14 +106,34 @@ void Moyenne(){
 etudiant* RechercheID(){
     etudiant *temp = head;
     char id[50];
+
     printf("ID : ");
-    scanf("%s", id);
+    read_line(id,sizeof(id));
+    To_Upper(id);
+
     while(temp != NULL){
         if(strcmp(temp->id,id)==0) return temp;
         temp = temp->next;
     }
     printf("\n=== Non trouvee ===\n");
     return NULL;
+}
+
+//SEARCH BY NAME
+etudiant* RechercheNom(){
+  etudiant *temp = head;
+  char nom[50];
+
+  printf("Nom :");
+  read_line(nom, sizeof(nom));
+  To_Upper(nom);
+
+   while(temp != NULL){
+      if(strcmp(nom, temp->nom) == 0) {return(temp);}
+      temp = temp->next;
+   }
+  printf("\n---NON TROUVEE---\n");
+  return(NULL);
 }
 
 // Display single student
@@ -130,9 +150,15 @@ void AffichagePrecis(etudiant *nv){
 void ChangerMoy(){
     etudiant *etu = RechercheID();
     if(etu == NULL) return;
+
     float nv_moy;
-    printf("Nouvelle moyenne : ");
-    scanf("%f",&nv_moy);
+    char buffer[20];
+
+    do{printf("Nouvelle Moyenne (Une moyenne valide est entre 0 et 20): ");
+       read_line(buffer, sizeof(buffer));
+       nv_moy = atof(buffer);
+              }while(nv_moy < 0 || nv_moy > 20);
+
     etu->moyenne = nv_moy;
     printf("\nModification avec SUCCESS\n");
 }
@@ -142,8 +168,10 @@ void ChangerNom(){
     etudiant *etu = RechercheID();
     if(etu == NULL) return;
     char nv_nom[50];
+
     printf("Nouveau nom : ");
-    scanf("%s", nv_nom);
+    read_line(nv_nom,sizeof(nv_nom));
+
     strcpy(etu->nom, nv_nom);
 }
 
