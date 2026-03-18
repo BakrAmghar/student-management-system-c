@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 #include <QtCharts>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QLabel>
+#include <QVariantAnimation>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,40 +21,33 @@ public:
     ~MainWindow();
 
 private slots:
-    // This matches your Save button
     void on_btn_save_clicked();
-
-    // This matches your Manage (Update/Delete) button
     void on_btn_manage_clicked();
-
-    // This matches your Search button
     void on_btn_search_clicked();
-
-    // This matches the File Save/Load buttons
     void on_btn_file_save_clicked();
     void on_btn_file_load_clicked();
-
-    // --- NEW: This matches the Live Search bar ---
     void on_input_search_id_textChanged(const QString &arg1);
-
-    //EXPORT button
     void on_btn_export_clicked();
 
 private:
     Ui::MainWindow *ui;
-
-    // --- NEW: Added the filter parameter here ---
     void updateUI(QString filter = "");
-
-    //Exporting functions:
     void exportAsPDF();
     void exportAsExcel();
 
-    // Charting variables
+    // --- ANIMATION HELPERS ---
+    void shakeWidget(QWidget *widget);
+    void pulseWidget(QWidget *widget);
+    void showToast(QString message);
+    void startTicker(int start, int end); // New Ticker function
+
+    QLabel *toastLabel;
+    int lastCount = 0; // Stores old count for the ticker animation
+
     QChart *mainChart;
     QBarSeries *mainSeries;
     QBarCategoryAxis *axisX;
     QValueAxis *axisY;
     QChartView *mainChartView;
 };
-#endif // MAINWINDOW_H
+#endif
