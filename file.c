@@ -1,29 +1,28 @@
-#include <stdio.h>
-#include "file.h"
 #include "etudiant.h"
-#include "utilities.h"
+#include <stdio.h>
 
-// Save to file
-void SauvegarderListe(){
-    FILE *fp = fopen("etudiants.txt","w");
-    if(fp==NULL){printf("Erreur ouverture fichier\n"); return;}
-    etudiant *temp=head;
-    while(temp!=NULL){
-        fprintf(fp,"%s %s %.2f\n",temp->id,temp->nom,temp->moyenne);
-        temp=temp->next;
+void SauvegarderListe() {
+    FILE *f = fopen("etudiants.txt", "w");
+    if (f == NULL) return;
+
+    etudiant *temp = head;
+    while (temp != NULL) {
+        fprintf(f, "%s %s %.2f\n", temp->id, temp->nom, temp->moyenne);
+        temp = temp->next;
     }
-    fclose(fp);
-    printf("\nEtudiants sauvegarder en etudiants.txt\n");
+    fclose(f);
 }
 
-// Load from file
-void LoadEtudiants(){
-    FILE *fp = fopen("etudiants.txt","r");
-    if(fp==NULL){printf("Fichier non existant\n"); return;}
+void LoadEtudiants() {
+    FILE *f = fopen("etudiants.txt", "r");
+    if (f == NULL) return;
+
+    ViderListe(); // Clear old memory
+
     char id[50], nom[50];
     float moy;
-    while(fscanf(fp,"%s %s %f\n", id, nom, &moy)==3){
-        InsertionQueue(id,moy,nom);
+    while (fscanf(f, "%s %s %f", id, nom, &moy) == 3) {
+        InsertionQueue(id, moy, nom);
     }
-    fclose(fp);
+    fclose(f);
 }

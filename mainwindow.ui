@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>841</width>
+    <height>673</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>11</pointsize>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* The Background */
+QMainWindow {
+    background-color: #1e272e; /* Dark professional blue-grey */
+}
+
+/* Group Boxes (Add, Search, Delete) */
+QGroupBox {
+    color: #ffffff;
+    font-weight: bold;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+
+/* THE FIX: Input Fields */
+QLineEdit {
+    background-color: #ffffff; /* White background for visibility */
+    color: #2c3e50;            /* Dark text so you can see it! */
+    border: 1px solid #dcdde1;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #3498db;
+    background-color: #f7f9fb;
+}
+
+/* Labels */
+QLabel {
+    color: #dcdde1;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* List Boxes (Students and Stats) */
+QListWidget {
+    background-color: #2f3640;
+    border: 1px solid #34495e;
+    border-radius: 8px;
+    color: #f5f6fa;
+    padding: 10px;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;
+}
+
+/* Color Coding for Buttons */
+#btn_save { background-color: #27ae60; }
+#btn_save:hover { background-color: #219150; }
+
+#btn_delete { background-color: #c0392b; }
+#btn_delete:hover { background-color: #a93226; }</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">/* This styles the main background */
+QMainWindow {
+    background-color: #f5f6fa;
+}
+
+/* This styles ALL buttons at once */
+QPushButton {
+    background-color: #353b48;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* This makes buttons change color when you hover over them */
+QPushButton:hover {
+    background-color: #718093;
+}
+
+/* This styles the input boxes */
+QLineEdit {
+    border: 2px solid #dcdde1;
+    border-radius: 5px;
+    padding: 4px;
+    background-color: white;
+}
+
+/* This makes the input box border blue when you click inside it */
+QLineEdit:focus {
+    border: 2px solid #0097e6;
+}</string>
+   </property>
+   <widget class="QListWidget" name="list_students">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>290</y>
+      <width>256</width>
+      <height>311</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>20</y>
+      <width>20</width>
+      <height>591</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>471</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>471</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>260</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Student List</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="list_stats">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>80</y>
+      <width>256</width>
+      <height>101</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>60</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Communication</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>10</y>
+      <width>241</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Add</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Id</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="input_add_id"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="input_add_name"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Grade</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="input_add_grade"/>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btn_save">
+       <property name="text">
+        <string>💾 Save Student</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>200</y>
+      <width>221</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Search</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Id</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="input_search_id"/>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btn_search">
+       <property name="text">
+        <string>🔍 Search</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>231</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Manage</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Id</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="input_manage_id"/>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btn_manage">
+       <property name="text">
+        <string>Manage Student ⚙️</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="formLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>10</y>
+      <width>267</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout_6">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btn_file_save">
+       <property name="text">
+        <string>💾 Save Database</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="btn_file_load">
+       <property name="text">
+        <string>📂 Load Database</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGraphicsView" name="chartContainer">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>390</y>
+      <width>411</width>
+      <height>221</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>841</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuStudent_Manager">
+    <property name="title">
+     <string>Student Manager</string>
+    </property>
+   </widget>
+   <addaction name="menuStudent_Manager"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

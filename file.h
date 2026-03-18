@@ -3,6 +3,7 @@
 
  void SauvegarderListe();
  void LoadEtudiants();
+ void ViderListe();
 
 
 #endif // FILE_H
