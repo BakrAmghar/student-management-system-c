@@ -39,10 +39,12 @@ private:
     void shakeWidget(QWidget *widget);
     void pulseWidget(QWidget *widget);
     void showToast(QString message);
-    void startTicker(int start, int end); // New Ticker function
+    void startTicker(int start, int end);
 
     QLabel *toastLabel;
-    int lastCount = 0; // Stores old count for the ticker animation
+    int lastCount = 0; // Keeping only ONE declaration here
+
+    void addToLog(QString message);
 
     QChart *mainChart;
     QBarSeries *mainSeries;

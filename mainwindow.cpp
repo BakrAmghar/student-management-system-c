@@ -29,34 +29,18 @@ extern "C" {
 #include <QTimer>
 #include <QApplication>
 #include <QVariantAnimation>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    // --- GLOBAL STYLESHEET (HOVER EFFECTS) ---
+    // --- GLOBAL STYLESHEET (TERMINAL STYLE LOGS) ---
     this->setStyleSheet(
-        "QPushButton { "
-        "   background-color: #34495e; color: white; border-radius: 6px; "
-        "   padding: 7px; font-weight: bold; border: 1px solid #2c3e50; "
-        "} "
-        "QPushButton:hover { "
-        "   background-color: #2980b9; border: 1px solid #3498db; "
-        "} "
-        "QPushButton:pressed { "
-        "   background-color: #1f618d; "
-        "} "
-        "QLineEdit { "
-        "   border: 2px solid #bdc3c7; "
-        "   border-radius: 5px; "
-        "   padding: 4px; "
-        "   color: #000000; "        /* FORCES TEXT TO BE BLACK */
-        "   background-color: #ffffff; " /* FORCES BACKGROUND TO BE WHITE */
-        "} "
-        "QLineEdit:focus { "
-        "   border: 2px solid #3498db; "
-        "   background-color: #ffffff; "
-        "}"
+        "QPushButton { background-color: #34495e; color: white; border-radius: 6px; padding: 7px; font-weight: bold; border: 1px solid #2c3e50; } "
+        "QPushButton:hover { background-color: #2980b9; border: 1px solid #3498db; } "
+        "QLineEdit { border: 2px solid #bdc3c7; border-radius: 5px; padding: 4px; color: #000; background: #fff; } "
+        "QListWidget#list_logs { background-color: #1b1b1b; color: #50fa7b; font-family: 'Consolas', monospace; font-size: 9pt; border: 1px solid #333; }"
         );
 
     QDoubleValidator *gradeValidator = new QDoubleValidator(0.0, 20.0, 2, this);
@@ -90,12 +74,20 @@ MainWindow::MainWindow(QWidget *parent)
     toastLabel->setAlignment(Qt::AlignCenter);
     toastLabel->setStyleSheet("background-color: #27ae60; color: white; padding: 12px; border-radius: 8px; font-weight: bold;");
 
+    addToLog("SYSTEM: Application Engine Started.");
     updateUI();
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
-// --- THE TICKER LOGIC ---
+// --- LOGGING ENGINE (NEWEST ON TOP) ---
+void MainWindow::addToLog(QString message) {
+    enregistrer_log(message.toLocal8Bit().constData());
+    QString timeStr = QTime::currentTime().toString("HH:mm:ss");
+    ui->list_logs->insertItem(0, QString("[%1] %2").arg(timeStr).arg(message));
+}
+
+// --- TICKER TARGETING NEW LBL ---
 void MainWindow::startTicker(int start, int end) {
     QVariantAnimation *anim = new QVariantAnimation(this);
     anim->setDuration(600);
@@ -103,11 +95,7 @@ void MainWindow::startTicker(int start, int end) {
     anim->setEndValue(end);
     anim->setEasingCurve(QEasingCurve::OutQuad);
     connect(anim, &QVariantAnimation::valueChanged, [this](const QVariant &value) {
-        for(int i = 0; i < ui->list_stats->count(); ++i) {
-            if(ui->list_stats->item(i)->text().contains("Total Students")) {
-                ui->list_stats->item(i)->setText(QString("Total Students: %1").arg(value.toInt()));
-            }
-        }
+        ui->lbl_total_val->setText(QString::number(value.toInt()));
     });
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
@@ -149,7 +137,6 @@ void MainWindow::pulseWidget(QWidget *widget) {
 
 void MainWindow::updateUI(QString filter) {
     ui->list_students->clear();
-    ui->list_stats->clear();
     etudiant *temp = head;
     int count = 0; float sum = 0;
     int fail = 0, pass = 0, good = 0, excel = 0;
@@ -161,11 +148,10 @@ void MainWindow::updateUI(QString filter) {
             temp = temp->next; continue;
         }
 
-        // --- COLOR CODING LOGIC ---
         QListWidgetItem *item = new QListWidgetItem(QString("ID: %1 | Name: %2 | Grade: %3").arg(idStr).arg(nomStr).arg(temp->moyenne));
-        if (temp->moyenne < 10) item->setForeground(QColor("#e74c3c")); // Red
-        else if (temp->moyenne >= 16) { item->setForeground(QColor("#27ae60")); item->setFont(QFont("Arial", 9, QFont::Bold)); } // Green
-        else item->setForeground(QColor("#f39c12")); // Orange
+        if (temp->moyenne < 10) item->setForeground(QColor("#e74c3c"));
+        else if (temp->moyenne >= 16) { item->setForeground(QColor("#27ae60")); item->setFont(QFont("Arial", 9, QFont::Bold)); }
+        else item->setForeground(QColor("#f39c12"));
         ui->list_students->addItem(item);
 
         if (temp->moyenne < 10) fail++;
@@ -176,9 +162,9 @@ void MainWindow::updateUI(QString filter) {
         temp = temp->next;
     }
 
-    ui->list_stats->addItem(filter.isEmpty() ? "--- TOTAL STATS ---" : "--- FILTERED RESULTS ---");
-    ui->list_stats->addItem(QString("Total Students: %1").arg(count)); // Ticker targets this line
-    if(count > 0) ui->list_stats->addItem(QString("Class Average: %1").arg(sum/count));
+    // --- UPDATE NEW STATS LABELS ---
+    ui->lbl_total_val->setText(QString::number(count));
+    ui->lbl_avg_val->setText(count > 0 ? QString::number(sum/count, 'f', 2) : "0.00");
 
     mainSeries->clear();
     QBarSet *set = new QBarSet("Students");
@@ -187,7 +173,6 @@ void MainWindow::updateUI(QString filter) {
     mainSeries->append(set);
     axisY->setRange(0, std::max({fail, pass, good, excel}) + 1);
 
-    // Trigger Ticker
     startTicker(lastCount, count);
     lastCount = count;
 }
@@ -200,16 +185,16 @@ void MainWindow::on_btn_save_clicked() {
         if(id.isEmpty()) shakeWidget(ui->input_add_id);
         if(name.isEmpty()) shakeWidget(ui->input_add_name);
         if(gradeStr.isEmpty()) shakeWidget(ui->input_add_grade);
-        QMessageBox::warning(this, "Empty Fields", "Please fill out all student information!");
         return;
     }
     if(InsertionQueue(id.toLocal8Bit().data(), gradeStr.toFloat(), name.toLocal8Bit().data())) {
-        pulseWidget(ui->btn_save); showToast("Student Added!"); updateUI();
+        pulseWidget(ui->btn_save); showToast("Student Added!");
+        addToLog("SUCCESS: Added student " + id + " (" + name + ")");
+        updateUI();
         ui->input_add_id->clear(); ui->input_add_name->clear(); ui->input_add_grade->clear();
-        ui->list_stats->addItem("✅ Student added successfully!");
     } else {
         shakeWidget(ui->input_add_id);
-        QMessageBox::critical(this, "Duplicate ID", "A student with ID " + id + " already exists!");
+        addToLog("ERROR: Duplicate ID attempt (" + id + ")");
     }
 }
 
@@ -217,9 +202,11 @@ void MainWindow::on_btn_manage_clicked() {
     QString theId = ui->input_manage_id->text();
     if(theId.isEmpty()) return;
     etudiant* res = RechercheID_GUI(theId.toLocal8Bit().data());
-    if(!res) { ui->list_stats->addItem("⚠️ Student not found!"); return; }
+    if(!res) { addToLog("NOT FOUND: Search failed for ID " + theId); return; }
+
     struct TempData { QString id; QString name; float grade; };
     TempData *data = new TempData{theId, QString::fromLocal8Bit(res->nom), res->moyenne};
+
     QDialog popup(this);
     popup.setWindowTitle("Manage Student");
     popup.setStyleSheet("background-color: #1e272e; color: white;");
@@ -228,9 +215,11 @@ void MainWindow::on_btn_manage_clicked() {
     QPushButton *btnDel = new QPushButton("Delete Student 🗑️");
     layout->addWidget(new QLabel("⚙️ Managing ID: " + theId));
     layout->addWidget(btnMod); layout->addWidget(btnDel);
+
     QString stl = "QPushButton { background-color: #34495e; color: white; padding: 10px; border-radius: 5px; }";
     btnMod->setStyleSheet(stl + "QPushButton { background-color: #e67e22; }");
     btnDel->setStyleSheet(stl + "QPushButton { background-color: #c0392b; }");
+
     connect(btnMod, &QPushButton::clicked, [=, &popup, &layout]() {
         btnMod->hide(); btnDel->hide();
         QPushButton *chId = new QPushButton("Change ID (" + data->id + ")");
@@ -238,24 +227,39 @@ void MainWindow::on_btn_manage_clicked() {
         QPushButton *chGrade = new QPushButton("Change Grade (" + QString::number(data->grade) + ")");
         QPushButton *confirm = new QPushButton("SAVE ALL CHANGES ✅");
         layout->addWidget(chId); layout->addWidget(chName); layout->addWidget(chGrade); layout->addWidget(confirm);
-        connect(chId, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "ID", "New ID:", QLineEdit::Normal, data->id, &ok); if (ok && !val.isEmpty()) { data->id = val; } });
-        connect(chName, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "Name", "New Name:", QLineEdit::Normal, data->name, &ok); if (ok && !val.isEmpty()) { data->name = val; } });
-        connect(chGrade, &QPushButton::clicked, [=, &popup]() { bool ok; double val = QInputDialog::getDouble(&popup, "Grade", "New Grade:", (double)data->grade, 0, 20, 2, &ok); if (ok) { data->grade = (float)val; } });
-        connect(confirm, &QPushButton::clicked, [=, &popup]() { Modifier_GUI(theId.toLocal8Bit().data(), data->id.toLocal8Bit().data(), data->name.toLocal8Bit().data(), data->grade); popup.accept(); });
+
+        connect(chId, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "ID", "New ID:", QLineEdit::Normal, data->id, &ok); if (ok && !val.isEmpty()) data->id = val; });
+        connect(chName, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "Name", "New Name:", QLineEdit::Normal, data->name, &ok); if (ok && !val.isEmpty()) data->name = val; });
+        connect(chGrade, &QPushButton::clicked, [=, &popup]() { bool ok; double val = QInputDialog::getDouble(&popup, "Grade", "New Grade:", (double)data->grade, 0, 20, 2, &ok); if (ok) data->grade = (float)val; });
+        connect(confirm, &QPushButton::clicked, [=, &popup]() {
+            Modifier_GUI(theId.toLocal8Bit().data(), data->id.toLocal8Bit().data(), data->name.toLocal8Bit().data(), data->grade);
+            addToLog("MODIFY: Record " + theId + " updated to " + data->id);
+            popup.accept();
+        });
     });
-    connect(btnDel, &QPushButton::clicked, [&]() { Supprimer_GUI(theId.toLocal8Bit().data()); popup.accept(); });
+
+    connect(btnDel, &QPushButton::clicked, [&]() {
+        Supprimer_GUI(theId.toLocal8Bit().data());
+        addToLog("DELETE: Student " + theId + " removed.");
+        popup.accept();
+    });
+
     if (popup.exec() == QDialog::Accepted) { updateUI(); SauvegarderListe(); }
     delete data;
 }
 
 void MainWindow::on_btn_file_save_clicked() {
     SauvegarderListe(); pulseWidget(ui->btn_file_save); showToast("Data Saved Successfully");
-    ui->list_stats->addItem("✅ System: Data Saved to etudiants.txt!");
+    addToLog("FILE_OP: All records exported to etudiants.txt");
 }
 
 void MainWindow::on_btn_file_load_clicked() {
     QMessageBox::StandardButton reply = QMessageBox::question(this, "Load", "⚠️ Replace current list with file data?", QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) { LoadEtudiants(); updateUI(); }
+    if (reply == QMessageBox::Yes) {
+        LoadEtudiants();
+        addToLog("FILE_OP: Data imported from etudiants.txt");
+        updateUI();
+    }
 }
 
 void MainWindow::on_btn_export_clicked() {
@@ -281,6 +285,7 @@ void MainWindow::exportAsPDF() {
     while(temp) { html += QString("<tr><td>%1</td><td>%2</td><td>%3</td></tr>").arg(temp->id).arg(temp->nom).arg(temp->moyenne); temp = temp->next; }
     html += "</table></body></html>";
     QTextDocument doc; doc.setHtml(html); doc.print(&printer);
+    addToLog("EXPORT: PDF Report generated.");
     QMessageBox::information(this, "Success", "PDF Report generated!");
 }
 
@@ -293,6 +298,7 @@ void MainWindow::exportAsExcel() {
         etudiant *temp = head;
         while(temp) { out << QString("%1,%2,%3\n").arg(temp->id).arg(temp->nom).arg(temp->moyenne); temp = temp->next; }
         file.close();
+        addToLog("EXPORT: CSV Data exported.");
         QMessageBox::information(this, "Success", "Excel-ready CSV generated!");
     }
 }
