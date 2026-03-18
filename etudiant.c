@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Actual variables live here
 etudiant *head = NULL;
 etudiant *queue = NULL;
 
@@ -17,8 +16,13 @@ etudiant* CreerEtudiant(char id[], float moy, char nom[]){
     return nv;
 }
 
-void InsertionQueue(char id[], float moy, char nom[]){
+int InsertionQueue(char id[], float moy, char nom[]){
+    // SECURITY: Don't add if ID exists
+    if (RechercheID_GUI(id) != NULL) return 0;
+
     etudiant *nv = CreerEtudiant(id, moy, nom);
+    if(!nv) return 0;
+
     if(queue == NULL){
         head = queue = nv;
     } else {
@@ -26,6 +30,7 @@ void InsertionQueue(char id[], float moy, char nom[]){
         nv->prev = queue;
         queue = nv;
     }
+    return 1;
 }
 
 etudiant* RechercheID_GUI(char id_to_find[]){

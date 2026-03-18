@@ -15,7 +15,14 @@ extern "C" {
 #include <QInputDialog>
 #include <QMessageBox>
 
-// --- ADDED CHART HEADERS ---
+// --- EXPORT HEADERS ---
+#include <QFileDialog>
+#include <QTextDocument>
+#include <QPrinter>
+#include <QFile>
+#include <QTextStream>
+
+// --- CHART HEADERS ---
 #include <QtCharts>
 #include <QChartView>
 #include <QBarSeries>
@@ -32,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     gradeValidator->setNotation(QDoubleValidator::StandardNotation);
     ui->input_add_grade->setValidator(gradeValidator);
 
-    // --- 1. INITIALIZE THE GRAPH ---
+    // --- INITIALIZE THE GRAPH ---
     mainChart = new QChart();
     mainSeries = new QBarSeries();
     mainChart->addSeries(mainSeries);
@@ -54,8 +61,6 @@ MainWindow::MainWindow(QWidget *parent)
     // Put the chart inside your chartContainer widget
     mainChartView = new QChartView(mainChart, ui->chartContainer);
     mainChartView->setRenderHint(QPainter::Antialiasing);
-
-    // Manual Resize to match the container size you set in UI Designer
     mainChartView->resize(ui->chartContainer->size());
 
     updateUI();
@@ -65,8 +70,8 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-// DRAWS THE LIST AND THE GRAPH ON SCREEN
-void MainWindow::updateUI() {
+// DRAWS THE LIST AND THE GRAPH (With Live Filtering)
+void MainWindow::updateUI(QString filter) {
     ui->list_students->clear();
     ui->list_stats->clear();
 
@@ -78,13 +83,19 @@ void MainWindow::updateUI() {
     int fail = 0, pass = 0, good = 0, excel = 0;
 
     while(temp != nullptr) {
+        QString idStr = QString::fromLocal8Bit(temp->id);
+        QString nomStr = QString::fromLocal8Bit(temp->nom);
+
+        // --- LIVE FILTER LOGIC ---
+        if(!filter.isEmpty() && !idStr.contains(filter, Qt::CaseInsensitive) && !nomStr.contains(filter, Qt::CaseInsensitive)) {
+            temp = temp->next;
+            continue;
+        }
+
         QString info = QString("ID: %1 | Name: %2 | Grade: %3")
-        .arg(temp->id)
-            .arg(temp->nom)
-            .arg(temp->moyenne);
+                           .arg(idStr).arg(nomStr).arg(temp->moyenne);
         ui->list_students->addItem(info);
 
-        // Logic for Graph Buckets
         if (temp->moyenne < 10) fail++;
         else if (temp->moyenne < 12) pass++;
         else if (temp->moyenne < 16) good++;
@@ -95,25 +106,97 @@ void MainWindow::updateUI() {
         temp = temp->next;
     }
 
-    ui->list_stats->addItem("--- STATS ---");
+    ui->list_stats->addItem(filter.isEmpty() ? "--- TOTAL STATS ---" : "--- FILTERED RESULTS ---");
     ui->list_stats->addItem(QString("Total Students: %1").arg(count));
     if(count > 0) {
         ui->list_stats->addItem(QString("Class Average: %1").arg(sum/count));
     }
 
-    // --- 2. REFRESH THE GRAPH BARS ---
+    // --- REFRESH THE GRAPH BARS ---
     mainSeries->clear();
     QBarSet *set = new QBarSet("Students");
     *set << fail << pass << good << excel;
-    set->setColor(QColor("#3498db")); // Nice EMSI Blue
+    set->setColor(QColor("#3498db"));
     mainSeries->append(set);
 
-    // Auto-adjust the Y axis so it looks good
     int maxStudents = std::max({fail, pass, good, excel});
     axisY->setRange(0, maxStudents + 1);
 }
 
-// ADD STUDENT BUTTON
+// --- NEW EXPORT LOGIC ---
+void MainWindow::on_btn_export_clicked() {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Export Records");
+    msgBox.setText("Choose your export format:");
+    QPushButton *pdfBtn = msgBox.addButton("PDF Report 📄", QMessageBox::ActionRole);
+    QPushButton *excelBtn = msgBox.addButton("Excel/CSV 📊", QMessageBox::ActionRole);
+    msgBox.addButton(QMessageBox::Cancel);
+
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == pdfBtn) {
+        exportAsPDF();
+    } else if (msgBox.clickedButton() == excelBtn) {
+        exportAsExcel();
+    }
+}
+
+void MainWindow::exportAsPDF() {
+    QString fileName = QFileDialog::getSaveFileName(this, "Save PDF", "Student_Report.pdf", "*.pdf");
+    if (fileName.isEmpty()) return;
+
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(fileName);
+
+    QString html = "<html><head><style>"
+                   "table { border-collapse: collapse; width: 100%; }"
+                   "th, td { border: 1px solid black; padding: 8px; text-align: left; }"
+                   "th { background-color: #3498db; color: white; }"
+                   "h1 { text-align: center; color: #2c3e50; }"
+                   "</style></head><body>"
+                   "<h1>EMSI Student Management Report</h1>"
+                   "<table><tr><th>ID</th><th>Student Name</th><th>Grade (/20)</th></tr>";
+
+    etudiant *temp = head;
+    while(temp) {
+        html += QString("<tr><td>%1</td><td>%2</td><td>%3</td></tr>")
+        .arg(temp->id).arg(temp->nom).arg(temp->moyenne);
+        temp = temp->next;
+    }
+    html += "</table></body></html>";
+
+    QTextDocument doc;
+    doc.setHtml(html);
+    doc.print(&printer);
+    QMessageBox::information(this, "Success", "PDF Report generated!");
+}
+
+void MainWindow::exportAsExcel() {
+    QString fileName = QFileDialog::getSaveFileName(this, "Save CSV", "Student_Data.csv", "*.csv");
+    if (fileName.isEmpty()) return;
+
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << "ID,Name,Grade\n";
+        etudiant *temp = head;
+        while(temp) {
+            out << QString("%1,%2,%3\n")
+            .arg(temp->id).arg(temp->nom).arg(temp->moyenne);
+            temp = temp->next;
+        }
+        file.close();
+        QMessageBox::information(this, "Success", "Excel-ready CSV generated!");
+    }
+}
+
+// DYNAMIC SEARCH SIGNAL
+void MainWindow::on_input_search_id_textChanged(const QString &arg1) {
+    updateUI(arg1);
+}
+
+// ADD STUDENT BUTTON (With Duplicate ID Check)
 void MainWindow::on_btn_save_clicked() {
     QString id = ui->input_add_id->text();
     QString name = ui->input_add_name->text();
@@ -121,20 +204,22 @@ void MainWindow::on_btn_save_clicked() {
     float grade = gradeStr.toFloat();
 
     if(id.isEmpty() || name.isEmpty() || gradeStr.isEmpty()) {
-        ui->list_stats->addItem("⚠️ Error: Missing information!");
+        QMessageBox::warning(this, "Empty Fields", "Please fill out all student information!");
         return;
     }
 
-    InsertionQueue(id.toLocal8Bit().data(), grade, name.toLocal8Bit().data());
-    updateUI();
-
-    ui->input_add_id->clear();
-    ui->input_add_name->clear();
-    ui->input_add_grade->clear();
-    ui->list_stats->addItem("✅ Student added to memory!");
+    if(InsertionQueue(id.toLocal8Bit().data(), grade, name.toLocal8Bit().data())) {
+        updateUI();
+        ui->input_add_id->clear();
+        ui->input_add_name->clear();
+        ui->input_add_grade->clear();
+        ui->list_stats->addItem("✅ Student added successfully!");
+    } else {
+        QMessageBox::critical(this, "Duplicate ID", "A student with ID " + id + " already exists!");
+    }
 }
 
-// MANAGE (MODIFY/DELETE) BUTTON
+// MANAGE BUTTON (Full Update/Delete Logic)
 void MainWindow::on_btn_manage_clicked() {
     QString theId = ui->input_manage_id->text();
     if(theId.isEmpty()) return;
@@ -202,48 +287,35 @@ void MainWindow::on_btn_manage_clicked() {
     if (popup.exec() == QDialog::Accepted) {
         updateUI();
         SauvegarderListe();
-        delete data;
-    } else {
-        delete data;
     }
+    delete data;
 }
 
-// SEARCH BUTTON
+// SEARCH BUTTON (For manual highlighting)
 void MainWindow::on_btn_search_clicked() {
     QString sid = ui->input_search_id->text();
     if(sid.isEmpty()) return;
-    etudiant* res = RechercheID_GUI(sid.toLocal8Bit().data());
-    if(res) {
-        for(int i = 0; i < ui->list_students->count(); ++i) {
-            if(ui->list_students->item(i)->text().contains(sid)) {
-                ui->list_students->item(i)->setSelected(true);
-                ui->list_students->scrollToItem(ui->list_students->item(i));
-                return;
-            }
+
+    for(int i = 0; i < ui->list_students->count(); ++i) {
+        if(ui->list_students->item(i)->text().contains(sid, Qt::CaseInsensitive)) {
+            ui->list_students->item(i)->setSelected(true);
+            ui->list_students->scrollToItem(ui->list_students->item(i));
+            return;
         }
     }
 }
 
-// SAVE TO FILE BUTTON
 void MainWindow::on_btn_file_save_clicked() {
     SauvegarderListe();
     ui->list_stats->addItem("✅ System: Data Saved to etudiants.txt!");
 }
 
-// LOAD FROM FILE BUTTON
 void MainWindow::on_btn_file_load_clicked() {
     QMessageBox::StandardButton reply = QMessageBox::question(this, "Load",
-                                                              "⚠️Replace current list with etudiants.txt?",
+                                                              "⚠️ Replace current list with file data?",
                                                               QMessageBox::Yes|QMessageBox::No);
-
     if (reply == QMessageBox::Yes) {
         LoadEtudiants();
         updateUI();
-
-        if (ui->list_students->count() == 0) {
-            ui->list_stats->addItem("📂 File empty or not found in build folder.");
-        } else {
-            ui->list_stats->addItem("✅ Loaded successfully!");
-        }
     }
 }

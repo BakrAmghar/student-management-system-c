@@ -125,8 +125,8 @@ QLineEdit:focus {
    <widget class="QListWidget" name="list_students">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>290</y>
+      <x>560</x>
+      <y>310</y>
       <width>256</width>
       <height>311</height>
      </rect>
@@ -149,7 +149,7 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>180</y>
+      <y>170</y>
       <width>471</width>
       <height>21</height>
      </rect>
@@ -174,8 +174,8 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>260</y>
+      <x>640</x>
+      <y>280</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -187,8 +187,8 @@ QLineEdit:focus {
    <widget class="QListWidget" name="list_stats">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>80</y>
+      <x>560</x>
+      <y>170</y>
       <width>256</width>
       <height>101</height>
      </rect>
@@ -197,8 +197,8 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>60</y>
+      <x>630</x>
+      <y>150</y>
       <width>131</width>
       <height>20</height>
      </rect>
@@ -211,7 +211,7 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>10</y>
+      <y>0</y>
       <width>241</width>
       <height>171</height>
      </rect>
@@ -278,8 +278,8 @@ QLineEdit:focus {
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>200</y>
+      <x>270</x>
+      <y>190</y>
       <width>221</width>
       <height>141</height>
      </rect>
@@ -327,7 +327,7 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>200</y>
+      <y>190</y>
       <width>231</width>
       <height>141</height>
      </rect>
@@ -377,10 +377,17 @@ QLineEdit:focus {
       <x>560</x>
       <y>10</y>
       <width>267</width>
-      <height>41</height>
+      <height>75</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_6">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="btn_file_load">
+       <property name="text">
+        <string>📂 Load Database</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="btn_file_save">
        <property name="text">
@@ -388,10 +395,10 @@ QLineEdit:focus {
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btn_file_load">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btn_export">
        <property name="text">
-        <string>📂 Load Database</string>
+        <string>📤Export Report</string>
        </property>
       </widget>
      </item>
@@ -401,9 +408,9 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>390</y>
-      <width>411</width>
-      <height>221</height>
+      <y>370</y>
+      <width>441</width>
+      <height>241</height>
      </rect>
     </property>
    </widget>

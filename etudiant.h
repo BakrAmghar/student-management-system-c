@@ -9,20 +9,19 @@ typedef struct etudiant {
     struct etudiant *prev;
 } etudiant;
 
-// Existing pointers
 extern etudiant *head;
 extern etudiant *queue;
 
-// GUI-Friendly Functions
+// Functions
 etudiant* CreerEtudiant(char id[], float moy, char nom[]);
-void InsertionQueue(char id[], float moy, char nom[]);
+int InsertionQueue(char id[], float moy, char nom[]); // Returns int for ID check
 void Supprimer_GUI(char id_to_delete[]);
 etudiant* RechercheID_GUI(char id_to_find[]);
-
 void Modifier_GUI(char old_id[], char new_id[], char new_nom[], float new_moy);
 
-// File Functions (Make sure these match your utilities/file .c names)
+// File functions
 void SauvegarderListe();
 void LoadEtudiants();
 void ViderListe();
+
 #endif
