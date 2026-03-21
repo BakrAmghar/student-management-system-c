@@ -190,7 +190,7 @@ QLineEdit:focus {
       <x>10</x>
       <y>10</y>
       <width>241</width>
-      <height>181</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
@@ -353,8 +353,8 @@ QLineEdit:focus {
      <rect>
       <x>540</x>
       <y>0</y>
-      <width>267</width>
-      <height>75</height>
+      <width>281</width>
+      <height>91</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_6">
@@ -466,7 +466,7 @@ QLineEdit:focus {
       <x>270</x>
       <y>10</y>
       <width>231</width>
-      <height>181</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">

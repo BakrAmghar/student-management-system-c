@@ -36,16 +36,65 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    // --- DARK BLUEISH-GREY THEME INTEGRATION ---
     this->setStyleSheet(
-        "QMainWindow { background-color: #2c3e50; } "
-        "QWidget#centralwidget { background-color: #2c3e50; } "
-        "QPushButton { background-color: #34495e; color: white; border-radius: 6px; padding: 7px; font-weight: bold; border: 1px solid #1a252f; } "
-        "QPushButton:hover { background-color: #2980b9; border: 1px solid #3498db; } "
-        "QLineEdit { border: 2px solid #bdc3c7; border-radius: 5px; padding: 4px; color: #000; background: #fff; } "
-        "QListWidget#list_logs { background-color: #1b1b1b; color: #50fa7b; font-family: 'Consolas', monospace; font-size: 9pt; border: 1px solid #333; } "
-        "QLabel { color: white; } "
-        "QListWidget#list_students { background-color: #1e272e; color: white; border: 1px solid #333; }"
+        /* Main Background */
+        "QMainWindow { background-color: #1a1a2e; } "
+        "QWidget#centralwidget { background-color: #1a1a2e; } "
+
+        /* Group Boxes (Updated style with a subtle glow) */
+        "QGroupBox { "
+        "   color: #ffffff; font-weight: bold; "
+        "   border: 1px solid #34495e; border-radius: 12px; "
+        "   margin-top: 15px; padding-top: 15px; background-color: #16213e; "
+        "} "
+
+        /* Input Fields (Kept white background but added better borders) */
+        "QLineEdit { "
+        "   background-color: #ffffff; color: #2c3e50; "
+        "   border: 2px solid #0f3460; border-radius: 6px; "
+        "   padding: 8px; font-size: 13px; "
+        "} "
+        "QLineEdit:focus { "
+        "   border: 2px solid #3498db; background-color: #f7f9fb; "
+        "} "
+
+        /* Labels */
+        "QLabel { color: #dcdde1; font-size: 12px; font-weight: bold; } "
+
+        /* List Widgets (Modernized with better spacing) */
+        "QListWidget { "
+        "   background-color: #0f3460; color: #f5f6fa; "
+        "   border-radius: 10px; padding: 10px; border: 1px solid #16213e; "
+        "} "
+        "QListWidget::item { padding: 10px; border-bottom: 1px solid #1a1a2e; } "
+        "QListWidget::item:selected { background-color: #3498db; color: white; border-radius: 6px; } "
+
+        /* PRETTY BUTTONS*/
+        "QPushButton { "
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3d5a80, stop:1 #293d56); "
+        "   color: white; border-radius: 8px; padding: 10px; font-weight: bold; "
+        "   border: 1px solid #1a252f; "
+        "} "
+        "QPushButton:hover { "
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4e74a6, stop:1 #3d5a80); "
+        "   border: 1px solid #3498db; "
+        "} "
+
+        /* Specific Button Color Logic */
+        "QPushButton#btn_save { "
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #27ae60, stop:1 #1e8449); "
+        "} "
+        "QPushButton#btn_save:hover { background: #2ecc71; } "
+
+        "QPushButton#btn_delete { "
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e74c3c, stop:1 #c0392b); "
+        "} "
+        "QPushButton#btn_delete:hover { background: #ff7675; } "
+
+        "QPushButton#btn_sort_execute { "
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8e44ad, stop:1 #702963); "
+        "} "
+        "QPushButton#btn_sort_execute:hover { background: #a29bfe; } "
         );
 
     // --- SOUND INITIALIZATION ---
