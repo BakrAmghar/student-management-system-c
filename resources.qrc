@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>assets/error.wav</file>
+        <file>assets/success.wav</file>
+    </qresource>
+</RCC>

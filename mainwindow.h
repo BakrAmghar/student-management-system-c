@@ -7,6 +7,7 @@
 #include <QEasingCurve>
 #include <QLabel>
 #include <QVariantAnimation>
+#include <QSoundEffect> // Added for sound
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,8 +29,6 @@ private slots:
     void on_btn_file_load_clicked();
     void on_input_search_id_textChanged(const QString &arg1);
     void on_btn_export_clicked();
-
-    // Sorting slots
     void on_btn_sort_id_clicked();
     void on_btn_sort_name_clicked();
     void on_btn_sort_grade_clicked();
@@ -48,7 +47,11 @@ private:
 
     QLabel *toastLabel;
     int lastCount = 0;
-    int currentSortMode; // ADDED THIS LINE TO FIX COMPILER ERROR
+    int currentSortMode;
+
+    // Sound Objects
+    QSoundEffect *soundSuccess;
+    QSoundEffect *soundError;
 
     void addToLog(QString message);
 

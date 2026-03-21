@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-
 project(StudentManager VERSION 0.1 LANGUAGES C CXX)
 
 set(CMAKE_AUTOUIC ON)
@@ -9,8 +8,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ADDED: PrintSupport to the components list
-find_package(Qt6 REQUIRED COMPONENTS Widgets Charts PrintSupport)
+# Added Multimedia for sound effects
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts PrintSupport Multimedia)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -23,18 +22,20 @@ set(PROJECT_SOURCES
         file.h
         utilities.c
         utilities.h
+        resources.qrc
 )
 
 qt_add_executable(StudentManager
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
+    resources.qrc
 )
 
-# ADDED: Qt6::PrintSupport to the link libraries
 target_link_libraries(StudentManager PRIVATE
     Qt6::Widgets
     Qt6::Charts
     Qt6::PrintSupport
+    Qt6::Multimedia
 )
 
 set_target_properties(StudentManager PROPERTIES
