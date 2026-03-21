@@ -1,0 +1,13 @@
+# Qt Creator & User Settings
+*.user
+.qtcreator/
+
+# Build Directories
+build/
+build-*/
+out/
+
+# Executables & Objects
+*.exe
+*.o
+*.obj

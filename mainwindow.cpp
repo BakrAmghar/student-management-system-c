@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    // --- GLOBAL STYLESHEET (TERMINAL STYLE LOGS) ---
     this->setStyleSheet(
         "QPushButton { background-color: #34495e; color: white; border-radius: 6px; padding: 7px; font-weight: bold; border: 1px solid #2c3e50; } "
         "QPushButton:hover { background-color: #2980b9; border: 1px solid #3498db; } "
@@ -74,20 +73,19 @@ MainWindow::MainWindow(QWidget *parent)
     toastLabel->setAlignment(Qt::AlignCenter);
     toastLabel->setStyleSheet("background-color: #27ae60; color: white; padding: 12px; border-radius: 8px; font-weight: bold;");
 
+    currentSortMode = 1; // INITIALIZED HERE
     addToLog("SYSTEM: Application Engine Started.");
     updateUI();
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
-// --- LOGGING ENGINE (NEWEST ON TOP) ---
 void MainWindow::addToLog(QString message) {
     enregistrer_log(message.toLocal8Bit().constData());
     QString timeStr = QTime::currentTime().toString("HH:mm:ss");
     ui->list_logs->insertItem(0, QString("[%1] %2").arg(timeStr).arg(message));
 }
 
-// --- TICKER TARGETING NEW LBL ---
 void MainWindow::startTicker(int start, int end) {
     QVariantAnimation *anim = new QVariantAnimation(this);
     anim->setDuration(600);
@@ -162,8 +160,6 @@ void MainWindow::updateUI(QString filter) {
         temp = temp->next;
     }
 
-    // --- UPDATE NEW STATS LABELS ---
-    ui->lbl_total_val->setText(QString::number(count));
     ui->lbl_avg_val->setText(count > 0 ? QString::number(sum/count, 'f', 2) : "0.00");
 
     mainSeries->clear();
@@ -181,13 +177,22 @@ void MainWindow::on_btn_save_clicked() {
     QString id = ui->input_add_id->text();
     QString name = ui->input_add_name->text();
     QString gradeStr = ui->input_add_grade->text();
+
     if(id.isEmpty() || name.isEmpty() || gradeStr.isEmpty()) {
         if(id.isEmpty()) shakeWidget(ui->input_add_id);
         if(name.isEmpty()) shakeWidget(ui->input_add_name);
         if(gradeStr.isEmpty()) shakeWidget(ui->input_add_grade);
         return;
     }
-    if(InsertionQueue(id.toLocal8Bit().data(), gradeStr.toFloat(), name.toLocal8Bit().data())) {
+
+    float gVal = gradeStr.toFloat();
+    if(gVal < 0 || gVal > 20) {
+        QMessageBox::critical(this, "Grade Error", "Grade must be between 0 and 20!");
+        shakeWidget(ui->input_add_grade);
+        return;
+    }
+
+    if(InsertionQueue(id.toLocal8Bit().data(), gVal, name.toLocal8Bit().data())) {
         pulseWidget(ui->btn_save); showToast("Student Added!");
         addToLog("SUCCESS: Added student " + id + " (" + name + ")");
         updateUI();
@@ -195,6 +200,7 @@ void MainWindow::on_btn_save_clicked() {
     } else {
         shakeWidget(ui->input_add_id);
         addToLog("ERROR: Duplicate ID attempt (" + id + ")");
+        QMessageBox::warning(this, "Duplicate ID", "This ID already exists!");
     }
 }
 
@@ -231,10 +237,14 @@ void MainWindow::on_btn_manage_clicked() {
         connect(chId, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "ID", "New ID:", QLineEdit::Normal, data->id, &ok); if (ok && !val.isEmpty()) data->id = val; });
         connect(chName, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "Name", "New Name:", QLineEdit::Normal, data->name, &ok); if (ok && !val.isEmpty()) data->name = val; });
         connect(chGrade, &QPushButton::clicked, [=, &popup]() { bool ok; double val = QInputDialog::getDouble(&popup, "Grade", "New Grade:", (double)data->grade, 0, 20, 2, &ok); if (ok) data->grade = (float)val; });
+
         connect(confirm, &QPushButton::clicked, [=, &popup]() {
-            Modifier_GUI(theId.toLocal8Bit().data(), data->id.toLocal8Bit().data(), data->name.toLocal8Bit().data(), data->grade);
-            addToLog("MODIFY: Record " + theId + " updated to " + data->id);
-            popup.accept();
+            if (Modifier_GUI(theId.toLocal8Bit().data(), data->id.toLocal8Bit().data(), data->name.toLocal8Bit().data(), data->grade)) {
+                addToLog("MODIFY: Record " + theId + " updated.");
+                popup.accept();
+            } else {
+                QMessageBox::critical(&popup, "Error", "ID already exists! Choose a unique ID.");
+            }
         });
     });
 
@@ -304,6 +314,7 @@ void MainWindow::exportAsExcel() {
 }
 
 void MainWindow::on_input_search_id_textChanged(const QString &arg1) { updateUI(arg1); }
+
 void MainWindow::on_btn_search_clicked() {
     QString sid = ui->input_search_id->text();
     for(int i = 0; i < ui->list_students->count(); ++i) {
@@ -313,4 +324,47 @@ void MainWindow::on_btn_search_clicked() {
             return;
         }
     }
+}
+
+// --- NEW SORTING SLOTS ---
+
+void MainWindow::on_btn_sort_id_clicked() {
+    currentSortMode = 1;
+    showToast("Sorting Mode: ID");
+    addToLog("SORT: Target set to Student ID.");
+}
+
+void MainWindow::on_btn_sort_name_clicked() {
+    currentSortMode = 2;
+    showToast("Sorting Mode: Name");
+    addToLog("SORT: Target set to Student Name.");
+}
+
+void MainWindow::on_btn_sort_grade_clicked() {
+    currentSortMode = 3;
+    showToast("Sorting Mode: Grade");
+    addToLog("SORT: Target set to Grades (Ranking).");
+}
+
+void MainWindow::on_btn_sort_execute_clicked() {
+    TrierListe(currentSortMode); // Call C logic
+    pulseWidget(ui->btn_sort_execute);
+
+    ui->list_students->clear();
+    etudiant *temp = head;
+    int r = 1;
+    while(temp) {
+        QString rankStr = "";
+        if (currentSortMode == 3) {
+            if (r == 1) rankStr = "🥇 ";
+            else if (r == 2) rankStr = "🥈 ";
+            else if (r == 3) rankStr = "🥉 ";
+            else rankStr = QString("#%1 ").arg(r);
+        }
+        ui->list_students->addItem(QString("%1ID: %2 | %3 | %4/20").arg(rankStr).arg(temp->id).arg(temp->nom).arg(temp->moyenne));
+        temp = temp->next; r++;
+    }
+
+    addToLog("ACTION: Sorting algorithm executed successfully.");
+    SauvegarderListe();
 }

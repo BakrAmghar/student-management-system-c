@@ -29,20 +29,26 @@ private slots:
     void on_input_search_id_textChanged(const QString &arg1);
     void on_btn_export_clicked();
 
+    // Sorting slots
+    void on_btn_sort_id_clicked();
+    void on_btn_sort_name_clicked();
+    void on_btn_sort_grade_clicked();
+    void on_btn_sort_execute_clicked();
+
 private:
     Ui::MainWindow *ui;
     void updateUI(QString filter = "");
     void exportAsPDF();
     void exportAsExcel();
 
-    // --- ANIMATION HELPERS ---
     void shakeWidget(QWidget *widget);
     void pulseWidget(QWidget *widget);
     void showToast(QString message);
     void startTicker(int start, int end);
 
     QLabel *toastLabel;
-    int lastCount = 0; // Keeping only ONE declaration here
+    int lastCount = 0;
+    int currentSortMode; // ADDED THIS LINE TO FIX COMPILER ERROR
 
     void addToLog(QString message);
 

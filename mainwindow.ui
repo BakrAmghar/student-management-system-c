@@ -125,17 +125,17 @@ QLineEdit:focus {
    <widget class="QListWidget" name="list_students">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>310</y>
-      <width>256</width>
-      <height>311</height>
+      <x>550</x>
+      <y>120</y>
+      <width>271</width>
+      <height>221</height>
      </rect>
     </property>
    </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>510</x>
       <y>20</y>
       <width>20</width>
       <height>591</height>
@@ -149,8 +149,8 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
-      <width>471</width>
+      <y>200</y>
+      <width>481</width>
       <height>21</height>
      </rect>
     </property>
@@ -162,8 +162,8 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>340</y>
-      <width>471</width>
+      <y>370</y>
+      <width>491</width>
       <height>21</height>
      </rect>
     </property>
@@ -175,7 +175,7 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>280</y>
+      <y>100</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -184,36 +184,13 @@ QLineEdit:focus {
      <string>Student List</string>
     </property>
    </widget>
-   <widget class="QListWidget" name="list_stats">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>170</y>
-      <width>256</width>
-      <height>101</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>150</y>
-      <width>131</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Communication</string>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>0</y>
+      <x>10</x>
+      <y>10</y>
       <width>241</width>
-      <height>171</height>
+      <height>181</height>
      </rect>
     </property>
     <property name="title">
@@ -279,8 +256,8 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>190</y>
-      <width>221</width>
+      <y>220</y>
+      <width>231</width>
       <height>141</height>
      </rect>
     </property>
@@ -327,8 +304,8 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>190</y>
-      <width>231</width>
+      <y>220</y>
+      <width>241</width>
       <height>141</height>
      </rect>
     </property>
@@ -374,8 +351,8 @@ QLineEdit:focus {
    <widget class="QWidget" name="formLayoutWidget_4">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>10</y>
+      <x>540</x>
+      <y>0</y>
       <width>267</width>
       <height>75</height>
      </rect>
@@ -407,12 +384,127 @@ QLineEdit:focus {
    <widget class="QGraphicsView" name="chartContainer">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>370</y>
-      <width>441</width>
-      <height>241</height>
+      <x>10</x>
+      <y>410</y>
+      <width>301</width>
+      <height>201</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>410</y>
+      <width>117</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Total Students:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbl_total_val">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Class Average:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbl_avg_val">
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QListWidget" name="list_logs">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>380</y>
+      <width>271</width>
+      <height>231</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>360</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Logs system</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>10</y>
+      <width>231</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Sort &amp; Rank</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btn_sort_name">
+       <property name="text">
+        <string>🔤Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btn_sort_id">
+       <property name="text">
+        <string>🆔 Id</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="btn_sort_grade">
+       <property name="text">
+        <string>🎓Grade</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="btn_sort_execute">
+       <property name="text">
+        <string>⚡ SORT LIST ⚡</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
