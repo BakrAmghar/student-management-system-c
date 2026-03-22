@@ -7,7 +7,7 @@
 #include <QEasingCurve>
 #include <QLabel>
 #include <QVariantAnimation>
-#include <QSoundEffect> // Added for sound
+#include <QSoundEffect>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,6 +33,7 @@ private slots:
     void on_btn_sort_name_clicked();
     void on_btn_sort_grade_clicked();
     void on_btn_sort_execute_clicked();
+    void on_btn_theme_toggle_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -45,20 +46,23 @@ private:
     void showToast(QString message);
     void startTicker(int start, int end);
 
-    QLabel *toastLabel;
+    // CRITICAL: Initialize to nullptr to prevent SIGSEGV in applyTheme()
+    QLabel *toastLabel = nullptr;
     int lastCount = 0;
     int currentSortMode;
 
-    // Sound Objects
-    QSoundEffect *soundSuccess;
-    QSoundEffect *soundError;
+    QSoundEffect *soundSuccess = nullptr;
+    QSoundEffect *soundError = nullptr;
 
     void addToLog(QString message);
 
-    QChart *mainChart;
-    QBarSeries *mainSeries;
-    QBarCategoryAxis *axisX;
-    QValueAxis *axisY;
-    QChartView *mainChartView;
+    bool isDarkMode = true;
+    void applyTheme();
+
+    QChart *mainChart = nullptr;
+    QBarSeries *mainSeries = nullptr;
+    QBarCategoryAxis *axisX = nullptr;
+    QValueAxis *axisY = nullptr;
+    QChartView *mainChartView = nullptr;
 };
 #endif

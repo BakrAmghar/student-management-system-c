@@ -36,68 +36,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    this->setStyleSheet(
-        /* Main Background */
-        "QMainWindow { background-color: #1a1a2e; } "
-        "QWidget#centralwidget { background-color: #1a1a2e; } "
+    // --- INITIALIZE OBJECTS (MUST happen before applyTheme) ---
 
-        /* Group Boxes (Updated style with a subtle glow) */
-        "QGroupBox { "
-        "   color: #ffffff; font-weight: bold; "
-        "   border: 1px solid #34495e; border-radius: 12px; "
-        "   margin-top: 15px; padding-top: 15px; background-color: #16213e; "
-        "} "
+    // Toast Notification
+    toastLabel = new QLabel(this);
+    toastLabel->hide();
+    toastLabel->setAlignment(Qt::AlignCenter);
 
-        /* Input Fields (Kept white background but added better borders) */
-        "QLineEdit { "
-        "   background-color: #ffffff; color: #2c3e50; "
-        "   border: 2px solid #0f3460; border-radius: 6px; "
-        "   padding: 8px; font-size: 13px; "
-        "} "
-        "QLineEdit:focus { "
-        "   border: 2px solid #3498db; background-color: #f7f9fb; "
-        "} "
-
-        /* Labels */
-        "QLabel { color: #dcdde1; font-size: 12px; font-weight: bold; } "
-
-        /* List Widgets (Modernized with better spacing) */
-        "QListWidget { "
-        "   background-color: #0f3460; color: #f5f6fa; "
-        "   border-radius: 10px; padding: 10px; border: 1px solid #16213e; "
-        "} "
-        "QListWidget::item { padding: 10px; border-bottom: 1px solid #1a1a2e; } "
-        "QListWidget::item:selected { background-color: #3498db; color: white; border-radius: 6px; } "
-
-        /* PRETTY BUTTONS*/
-        "QPushButton { "
-        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3d5a80, stop:1 #293d56); "
-        "   color: white; border-radius: 8px; padding: 10px; font-weight: bold; "
-        "   border: 1px solid #1a252f; "
-        "} "
-        "QPushButton:hover { "
-        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4e74a6, stop:1 #3d5a80); "
-        "   border: 1px solid #3498db; "
-        "} "
-
-        /* Specific Button Color Logic */
-        "QPushButton#btn_save { "
-        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #27ae60, stop:1 #1e8449); "
-        "} "
-        "QPushButton#btn_save:hover { background: #2ecc71; } "
-
-        "QPushButton#btn_delete { "
-        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e74c3c, stop:1 #c0392b); "
-        "} "
-        "QPushButton#btn_delete:hover { background: #ff7675; } "
-
-        "QPushButton#btn_sort_execute { "
-        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8e44ad, stop:1 #702963); "
-        "} "
-        "QPushButton#btn_sort_execute:hover { background: #a29bfe; } "
-        );
-
-    // --- SOUND INITIALIZATION ---
+    // Sound effects
     soundSuccess = new QSoundEffect(this);
     soundSuccess->setSource(QUrl("qrc:/new/prefix1/assets/success.wav"));
     soundSuccess->setVolume(0.5f);
@@ -106,46 +52,41 @@ MainWindow::MainWindow(QWidget *parent)
     soundError->setSource(QUrl("qrc:/new/prefix1/assets/error.wav"));
     soundError->setVolume(0.5f);
 
-    // --- VALIDATORS ---
-    QDoubleValidator *gradeValidator = new QDoubleValidator(0.0, 20.0, 2, this);
-    gradeValidator->setNotation(QDoubleValidator::StandardNotation);
-    ui->input_add_grade->setValidator(gradeValidator);
-
-    // --- CHART SETUP ---
+    // Chart Components
     mainChart = new QChart();
     mainSeries = new QBarSeries();
     mainChart->addSeries(mainSeries);
     mainChart->setTitle("📊 Live Grade Distribution");
-    mainChart->setBackgroundBrush(QBrush(QColor("#2c3e50")));
-    mainChart->setTitleBrush(QBrush(QColor("#ffffff")));
-
-    // SMART ANIMATION: Set chart animation to AllAnimations for smooth bar transitions
     mainChart->setAnimationOptions(QChart::AllAnimations);
     mainChart->setAnimationDuration(700);
 
     axisX = new QBarCategoryAxis();
     QStringList categories; categories << "<10" << "10-12" << "12-16" << "16-20";
     axisX->append(categories);
-    axisX->setLabelsColor(QColor("#bdc3c7"));
     mainChart->addAxis(axisX, Qt::AlignBottom);
     mainSeries->attachAxis(axisX);
 
     axisY = new QValueAxis();
     axisY->setLabelFormat("%d");
-    axisY->setLabelsColor(QColor("#bdc3c7"));
     mainChart->addAxis(axisY, Qt::AlignLeft);
     mainSeries->attachAxis(axisY);
 
-    mainChartView = new QChartView(mainChart, ui->chartContainer);
-    mainChartView->setRenderHint(QPainter::Antialiasing);
-    mainChartView->resize(ui->chartContainer->size());
-    mainChartView->show();
+    if (ui->chartContainer) {
+        mainChartView = new QChartView(mainChart, ui->chartContainer);
+        mainChartView->setRenderHint(QPainter::Antialiasing);
+        if (ui->chartContainer->size().isValid()) {
+            mainChartView->resize(ui->chartContainer->size());
+        }
+        mainChartView->show();
+    }
 
-    // --- TOAST NOTIFICATION ---
-    toastLabel = new QLabel(this);
-    toastLabel->hide();
-    toastLabel->setAlignment(Qt::AlignCenter);
-    toastLabel->setStyleSheet("background-color: #27ae60; color: white; padding: 12px; border-radius: 8px; font-weight: bold;");
+    // Input Validators
+    QDoubleValidator *gradeValidator = new QDoubleValidator(0.0, 20.0, 2, this);
+    gradeValidator->setNotation(QDoubleValidator::StandardNotation);
+    ui->input_add_grade->setValidator(gradeValidator);
+
+    // --- APPLY THEME ---
+    applyTheme();
 
     currentSortMode = 1;
     addToLog("SYSTEM: Application Engine Started.");
@@ -153,6 +94,63 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::on_btn_theme_toggle_clicked() {
+    isDarkMode = !isDarkMode;
+    if(soundSuccess) soundSuccess->play();
+    pulseWidget(ui->btn_theme_toggle);
+    applyTheme();
+    addToLog(isDarkMode ? "THEME: Switched to Midnight Mode" : "THEME: Switched to Day Mode");
+}
+
+void MainWindow::applyTheme() {
+    // If statements check for nullptr to prevent crashes
+    if (isDarkMode) {
+        ui->btn_theme_toggle->setText("🌙");
+        this->setStyleSheet(
+            "QMainWindow, QWidget#centralwidget { background-color: #1a1a2e; } "
+            "QGroupBox { color: #ffffff; font-weight: bold; border: 1px solid #34495e; border-radius: 12px; margin-top: 15px; padding-top: 15px; background-color: #16213e; } "
+            "QLineEdit { background-color: #ffffff; color: #2c3e50; border: 2px solid #0f3460; border-radius: 6px; padding: 8px; font-size: 13px; } "
+            "QLineEdit:focus { border: 2px solid #3498db; background-color: #f7f9fb; } "
+            "QLabel { color: #dcdde1; font-size: 12px; font-weight: bold; } "
+            "QListWidget { background-color: #0f3460; color: #f5f6fa; border-radius: 10px; padding: 10px; border: 1px solid #16213e; } "
+            "QListWidget::item { padding: 10px; border-bottom: 1px solid #1a1a2e; } "
+            "QListWidget::item:selected { background-color: #3498db; color: white; border-radius: 6px; } "
+            "QPushButton { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3d5a80, stop:1 #293d56); color: white; border-radius: 8px; padding: 10px; font-weight: bold; border: 1px solid #1a252f; } "
+            "QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4e74a6, stop:1 #3d5a80); border: 1px solid #3498db; } "
+            "QPushButton#btn_save { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #27ae60, stop:1 #1e8449); } "
+            "QPushButton#btn_delete { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e74c3c, stop:1 #c0392b); } "
+            "QPushButton#btn_sort_execute { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #8e44ad, stop:1 #702963); } "
+            );
+        if(mainChart) {
+            mainChart->setBackgroundBrush(QBrush(QColor("#2c3e50")));
+            mainChart->setTitleBrush(QBrush(QColor("#ffffff")));
+            if(axisX) axisX->setLabelsColor(QColor("#bdc3c7"));
+            if(axisY) axisY->setLabelsColor(QColor("#bdc3c7"));
+        }
+        if(toastLabel) toastLabel->setStyleSheet("background-color: #27ae60; color: white; padding: 12px; border-radius: 8px; font-weight: bold;");
+    } else {
+        ui->btn_theme_toggle->setText("☀️");
+        this->setStyleSheet(
+            "QMainWindow, QWidget#centralwidget { background-color: #f0f2f5; } "
+            "QGroupBox { color: #2c3e50; font-weight: bold; border: 1px solid #dcdde1; border-radius: 12px; margin-top: 15px; padding-top: 15px; background-color: #ffffff; } "
+            "QLineEdit { background-color: #ffffff; color: #2c3e50; border: 2px solid #ced4da; border-radius: 6px; padding: 8px; } "
+            "QLabel { color: #2c3e50; font-size: 12px; font-weight: bold; } "
+            "QListWidget { background-color: #ffffff; color: #2c3e50; border-radius: 10px; padding: 10px; border: 1px solid #dcdde1; } "
+            "QListWidget::item { padding: 10px; border-bottom: 1px solid #f0f2f5; } "
+            "QPushButton { background: #e9ecef; color: #2c3e50; border-radius: 8px; padding: 10px; border: 1px solid #ced4da; font-weight: bold; } "
+            "QPushButton#btn_save { background: #2ecc71; color: white; } "
+            "QPushButton#btn_delete { background: #e74c3c; color: white; } "
+            );
+        if(mainChart) {
+            mainChart->setBackgroundBrush(QBrush(QColor("#ffffff")));
+            mainChart->setTitleBrush(QBrush(QColor("#2c3e50")));
+            if(axisX) axisX->setLabelsColor(QColor("#2c3e50"));
+            if(axisY) axisY->setLabelsColor(QColor("#2c3e50"));
+        }
+        if(toastLabel) toastLabel->setStyleSheet("background-color: #2c3e50; color: white; padding: 12px; border-radius: 8px; font-weight: bold;");
+    }
+}
 
 void MainWindow::addToLog(QString message) {
     enregistrer_log(message.toLocal8Bit().constData());
@@ -173,6 +171,7 @@ void MainWindow::startTicker(int start, int end) {
 }
 
 void MainWindow::showToast(QString message) {
+    if(!toastLabel) return;
     toastLabel->setText(" ✅ " + message + " ");
     toastLabel->adjustSize();
     int x = (this->width() - toastLabel->width()) / 2;
@@ -185,11 +184,11 @@ void MainWindow::showToast(QString message) {
     anim->setEndValue(QPoint(x, y));
     anim->setEasingCurve(QEasingCurve::OutCubic);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
-    QTimer::singleShot(2500, [this]() { toastLabel->hide(); });
+    QTimer::singleShot(2500, [this]() { if(toastLabel) toastLabel->hide(); });
 }
 
 void MainWindow::shakeWidget(QWidget *widget) {
-    soundError->play();
+    if(soundError) soundError->play();
     QPropertyAnimation *anim = new QPropertyAnimation(widget, "pos");
     anim->setDuration(400);
     QPoint startPos = widget->pos();
@@ -199,15 +198,13 @@ void MainWindow::shakeWidget(QWidget *widget) {
     anim->setKeyValueAt(1, startPos);
     widget->setStyleSheet("border: 2px solid #e74c3c; background-color: #4c2b2b; color: white;");
     anim->start(QAbstractAnimation::DeleteWhenStopped);
-    QTimer::singleShot(1000, [widget]() { widget->setStyleSheet(""); });
+    QTimer::singleShot(1000, [widget]() { if(widget) widget->setStyleSheet(""); });
 }
 
 void MainWindow::pulseWidget(QWidget *widget) {
-    // Animation 1: Color Flash
+    if(!widget) return;
     QString originalStyle = widget->styleSheet();
     widget->setStyleSheet("background-color: #2ecc71; color: white; border: 1px solid white;");
-
-    // Animation 2: Scale/Bounce effect using Geometry
     QPropertyAnimation *anim = new QPropertyAnimation(widget, "geometry");
     anim->setDuration(200);
     QRect geom = widget->geometry();
@@ -216,8 +213,7 @@ void MainWindow::pulseWidget(QWidget *widget) {
     anim->setEndValue(geom);
     anim->setEasingCurve(QEasingCurve::OutBack);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
-
-    QTimer::singleShot(500, [widget, originalStyle]() { widget->setStyleSheet(originalStyle); });
+    QTimer::singleShot(500, [widget, originalStyle]() { if(widget) widget->setStyleSheet(originalStyle); });
 }
 
 void MainWindow::updateUI(QString filter) {
@@ -236,7 +232,7 @@ void MainWindow::updateUI(QString filter) {
         QListWidgetItem *item = new QListWidgetItem(QString("ID: %1 | Name: %2 | Grade: %3").arg(idStr).arg(nomStr).arg(temp->moyenne));
         if (temp->moyenne < 10) item->setForeground(QColor("#e74c3c"));
         else if (temp->moyenne >= 16) { item->setForeground(QColor("#50fa7b")); item->setFont(QFont("Arial", 9, QFont::Bold)); }
-        else item->setForeground(QColor("#f1c40f"));
+        else item->setForeground(isDarkMode ? QColor("#f1c40f") : QColor("#2c3e50"));
         ui->list_students->addItem(item);
 
         if (temp->moyenne < 10) fail++;
@@ -248,15 +244,14 @@ void MainWindow::updateUI(QString filter) {
     }
 
     ui->lbl_avg_val->setText(count > 0 ? QString::number(sum/count, 'f', 2) : "0.00");
-
-    // SMART ANIMATION: The chart bars will now "grow" and slide smoothly
-    mainSeries->clear();
-    QBarSet *set = new QBarSet("Students");
-    *set << fail << pass << good << excel;
-    set->setColor(QColor("#3498db"));
-    mainSeries->append(set);
-    axisY->setRange(0, std::max({fail, pass, good, excel}) + 1);
-
+    if(mainSeries) {
+        mainSeries->clear();
+        QBarSet *set = new QBarSet("Students");
+        *set << fail << pass << good << excel;
+        set->setColor(QColor("#3498db"));
+        mainSeries->append(set);
+    }
+    if(axisY) axisY->setRange(0, std::max({fail, pass, good, excel}) + 1);
     startTicker(lastCount, count);
     lastCount = count;
 }
@@ -281,7 +276,7 @@ void MainWindow::on_btn_save_clicked() {
     }
 
     if(InsertionQueue(id.toLocal8Bit().data(), gVal, name.toLocal8Bit().data())) {
-        soundSuccess->play();
+        if(soundSuccess) soundSuccess->play();
         pulseWidget(ui->btn_save);
         showToast("Student Added!");
         addToLog("SUCCESS: Added student " + id + " (" + name + ")");
@@ -299,7 +294,7 @@ void MainWindow::on_btn_manage_clicked() {
     if(theId.isEmpty()) return;
     etudiant* res = RechercheID_GUI(theId.toLocal8Bit().data());
     if(!res) {
-        soundError->play();
+        if(soundError) soundError->play();
         addToLog("NOT FOUND: Search failed for ID " + theId);
         return;
     }
@@ -309,16 +304,12 @@ void MainWindow::on_btn_manage_clicked() {
 
     QDialog popup(this);
     popup.setWindowTitle("Manage Student");
-    popup.setStyleSheet("background-color: #1e272e; color: white;");
+    popup.setStyleSheet(isDarkMode ? "background-color: #1e272e; color: white;" : "background-color: white; color: black;");
     QVBoxLayout *layout = new QVBoxLayout(&popup);
     QPushButton *btnMod = new QPushButton("Update Information ✍️");
     QPushButton *btnDel = new QPushButton("Delete Student 🗑️");
     layout->addWidget(new QLabel("⚙️ Managing ID: " + theId));
     layout->addWidget(btnMod); layout->addWidget(btnDel);
-
-    QString stl = "QPushButton { background-color: #34495e; color: white; padding: 10px; border-radius: 5px; }";
-    btnMod->setStyleSheet(stl + "QPushButton { background-color: #e67e22; }");
-    btnDel->setStyleSheet(stl + "QPushButton { background-color: #c0392b; }");
 
     connect(btnMod, &QPushButton::clicked, [=, &popup, &layout]() {
         btnMod->hide(); btnDel->hide();
@@ -327,26 +318,21 @@ void MainWindow::on_btn_manage_clicked() {
         QPushButton *chGrade = new QPushButton("Change Grade (" + QString::number(data->grade) + ")");
         QPushButton *confirm = new QPushButton("SAVE ALL CHANGES ✅");
         layout->addWidget(chId); layout->addWidget(chName); layout->addWidget(chGrade); layout->addWidget(confirm);
-
         connect(chId, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "ID", "New ID:", QLineEdit::Normal, data->id, &ok); if (ok && !val.isEmpty()) data->id = val; });
         connect(chName, &QPushButton::clicked, [=, &popup]() { bool ok; QString val = QInputDialog::getText(&popup, "Name", "New Name:", QLineEdit::Normal, data->name, &ok); if (ok && !val.isEmpty()) data->name = val; });
         connect(chGrade, &QPushButton::clicked, [=, &popup]() { bool ok; double val = QInputDialog::getDouble(&popup, "Grade", "New Grade:", (double)data->grade, 0, 20, 2, &ok); if (ok) data->grade = (float)val; });
-
         connect(confirm, &QPushButton::clicked, [=, &popup]() {
             if (Modifier_GUI(theId.toLocal8Bit().data(), data->id.toLocal8Bit().data(), data->name.toLocal8Bit().data(), data->grade)) {
-                soundSuccess->play();
+                if(soundSuccess) soundSuccess->play();
                 addToLog("MODIFY: Record " + theId + " updated.");
                 popup.accept();
-            } else {
-                soundError->play();
-                QMessageBox::critical(&popup, "Error", "ID already exists! Choose a unique ID.");
-            }
+            } else { if(soundError) soundError->play(); QMessageBox::critical(&popup, "Error", "ID already exists!"); }
         });
     });
 
     connect(btnDel, &QPushButton::clicked, [&]() {
         Supprimer_GUI(theId.toLocal8Bit().data());
-        soundSuccess->play();
+        if(soundSuccess) soundSuccess->play();
         addToLog("DELETE: Student " + theId + " removed.");
         popup.accept();
     });
@@ -357,7 +343,7 @@ void MainWindow::on_btn_manage_clicked() {
 
 void MainWindow::on_btn_file_save_clicked() {
     SauvegarderListe();
-    soundSuccess->play();
+    if(soundSuccess) soundSuccess->play();
     pulseWidget(ui->btn_file_save);
     showToast("Data Saved Successfully");
     addToLog("FILE_OP: All records exported to etudiants.txt");
@@ -367,7 +353,7 @@ void MainWindow::on_btn_file_load_clicked() {
     QMessageBox::StandardButton reply = QMessageBox::question(this, "Load", "⚠️ Replace current list with file data?", QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         LoadEtudiants();
-        soundSuccess->play();
+        if(soundSuccess) soundSuccess->play();
         addToLog("FILE_OP: Data imported from etudiants.txt");
         updateUI();
     }
@@ -396,7 +382,7 @@ void MainWindow::exportAsPDF() {
     while(temp) { html += QString("<tr><td>%1</td><td>%2</td><td>%3</td></tr>").arg(temp->id).arg(temp->nom).arg(temp->moyenne); temp = temp->next; }
     html += "</table></body></html>";
     QTextDocument doc; doc.setHtml(html); doc.print(&printer);
-    soundSuccess->play();
+    if(soundSuccess) soundSuccess->play();
     addToLog("EXPORT: PDF Report generated.");
     QMessageBox::information(this, "Success", "PDF Report generated!");
 }
@@ -410,7 +396,7 @@ void MainWindow::exportAsExcel() {
         etudiant *temp = head;
         while(temp) { out << QString("%1,%2,%3\n").arg(temp->id).arg(temp->nom).arg(temp->moyenne); temp = temp->next; }
         file.close();
-        soundSuccess->play();
+        if(soundSuccess) soundSuccess->play();
         addToLog("EXPORT: CSV Data exported.");
         QMessageBox::information(this, "Success", "Excel-ready CSV generated!");
     }
@@ -429,58 +415,24 @@ void MainWindow::on_btn_search_clicked() {
     }
 }
 
-// --- SORTING BUTTONS WITH SELECTION STATES ---
-void MainWindow::on_btn_sort_id_clicked() {
-    currentSortMode = 1;
-    ui->btn_sort_id->setStyleSheet("background-color: #2980b9; border: 2px solid #3498db; color: white; font-weight: bold;");
-    ui->btn_sort_name->setStyleSheet("");
-    ui->btn_sort_grade->setStyleSheet("");
-    showToast("Sorting Mode: ID");
-}
-
-void MainWindow::on_btn_sort_name_clicked() {
-    currentSortMode = 2;
-    ui->btn_sort_name->setStyleSheet("background-color: #2980b9; border: 2px solid #3498db; color: white; font-weight: bold;");
-    ui->btn_sort_id->setStyleSheet("");
-    ui->btn_sort_grade->setStyleSheet("");
-    showToast("Sorting Mode: Name");
-}
-
-void MainWindow::on_btn_sort_grade_clicked() {
-    currentSortMode = 3;
-    ui->btn_sort_grade->setStyleSheet("background-color: #2980b9; border: 2px solid #3498db; color: white; font-weight: bold;");
-    ui->btn_sort_id->setStyleSheet("");
-    ui->btn_sort_name->setStyleSheet("");
-    showToast("Sorting Mode: Grade");
-}
+void MainWindow::on_btn_sort_id_clicked() { currentSortMode = 1; showToast("Sorting Mode: ID"); }
+void MainWindow::on_btn_sort_name_clicked() { currentSortMode = 2; showToast("Sorting Mode: Name"); }
+void MainWindow::on_btn_sort_grade_clicked() { currentSortMode = 3; showToast("Sorting Mode: Grade"); }
 
 void MainWindow::on_btn_sort_execute_clicked() {
     TrierListe(currentSortMode);
-    soundSuccess->play();
+    if(soundSuccess) soundSuccess->play();
     pulseWidget(ui->btn_sort_execute);
-
     ui->list_students->clear();
-    etudiant *temp = head;
-    int r = 1;
+    etudiant *temp = head; int r = 1;
     while(temp) {
         QString rankStr = "";
         if (currentSortMode == 3) {
-            if (r == 1) rankStr = "🥇 ";
-            else if (r == 2) rankStr = "🥈 ";
-            else if (r == 3) rankStr = "🥉 ";
-            else rankStr = QString("#%1 ").arg(r);
+            if (r == 1) rankStr = "🥇 "; else if (r == 2) rankStr = "🥈 "; else if (r == 3) rankStr = "🥉 "; else rankStr = QString("#%1 ").arg(r);
         }
         ui->list_students->addItem(QString("%1ID: %2 | %3 | %4/20").arg(rankStr).arg(temp->id).arg(temp->nom).arg(temp->moyenne));
         temp = temp->next; r++;
     }
-
-    addToLog("ACTION: Sorting algorithm executed successfully.");
+    addToLog("ACTION: Sorting algorithm executed.");
     SauvegarderListe();
-
-    // Reset sort button colors after execution
-    QTimer::singleShot(1000, [this]() {
-        ui->btn_sort_id->setStyleSheet("");
-        ui->btn_sort_name->setStyleSheet("");
-        ui->btn_sort_grade->setStyleSheet("");
-    });
 }

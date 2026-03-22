@@ -23,12 +23,14 @@ set(PROJECT_SOURCES
         utilities.c
         utilities.h
         resources.qrc
+        icon.rc
 )
 
 qt_add_executable(StudentManager
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
     resources.qrc
+    icon.rc
 )
 
 target_link_libraries(StudentManager PRIVATE
