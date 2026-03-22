@@ -12,11 +12,15 @@ If you just want to use the app, you don't need to compile any code:
 1. Go to the [Latest Release](https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/releases/latest) page.
 2. Download the `StudentManager_Installer.exe`.
 3. Install and run!
+4. !! Run as admin to get access to saving/loading files functions !!
+   
+# 🚀 [Download the Student Manager v2.0 Installer Here](https://github.com/BakrAmghar/student-management-system-c/releases/tag/v2.0-final)
 
 ## 👨‍💻 About the Author
 **Bakr**
 2nd Year Engineering Student
 *École Marocaine des Sciences de l'Ingénieur (EMSI)*
+I LOVE COMPUTER STUFF, HERE IS [My LinkedIn](https://www.linkedin.com/in/bakr-amghar-0675b428b/) IF YOU WANNA CONNECT !
 
 <img width="1457" height="975" alt="image" src="https://github.com/user-attachments/assets/a578e4f1-d95f-45d1-ad40-d8d1edcf76d0" />
 <img width="1077" height="888" alt="image" src="https://github.com/user-attachments/assets/597b9f64-3240-471f-80f3-f363f699992a" />
@@ -27,6 +31,6 @@ If you just want to use the app, you don't need to compile any code:
 
 
 
-
+# 🚀 [Download the Student Manager v2.0 Installer Here](https://github.com/BakrAmghar/student-management-system-c/releases/tag/v2.0-final)
 ---
 Developed as a 2nd-year engineering project at **EMSI (École Marocaine des Sciences de l'Ingénieur)**.
