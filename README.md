@@ -6,6 +6,7 @@ A professional student record management tool built with **C** and **Qt/FLTK**, 
 - **C Backend:** Efficient data handling and File I/O.
 - **Modern GUI:** Easy-to-use interface for student administration.
 - **Search & Filter:** Find records instantly by name or ID.
+- **Full SQLite3 Integration:** High-performance relational database. Ensuring data integrity and supports complex querying for better scalability.
 
 ## 🚀 Quick Start (No Coding Required)
 If you just want to use the app, you don't need to compile any code:
