@@ -31,6 +31,8 @@ qt_add_executable(StudentManager
     ${PROJECT_SOURCES}
     resources.qrc
     icon.rc
+    sqlite3.c
+    sqlite3.h
 )
 
 target_link_libraries(StudentManager PRIVATE

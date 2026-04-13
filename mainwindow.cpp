@@ -4,6 +4,7 @@
 extern "C" {
 #include "etudiant.h"
 #include "file.h"
+#include "sqlite3.h"
 }
 
 #include <QDoubleValidator>
@@ -36,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    // --- INITIALIZE OBJECTS (MUST happen before applyTheme) ---
+    // --- INITIALIZE SQLITE ENGINE ---
+    InitDatabase();
+    LoadEtudiants();
 
     // Toast Notification
     toastLabel = new QLabel(this);
@@ -89,10 +92,9 @@ MainWindow::MainWindow(QWidget *parent)
     applyTheme();
 
     currentSortMode = 1;
-    addToLog("SYSTEM: Application Engine Started.");
+    addToLog("SYSTEM: SQLite Engine Started.");
     updateUI();
 }
-
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::on_btn_theme_toggle_clicked() {

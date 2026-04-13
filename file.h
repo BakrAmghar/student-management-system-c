@@ -1,11 +1,14 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include "etudiant.h" // this is included for the etudiant struct eeee
+#include "sqlite3.h"
 
+// Database global handle
+extern sqlite3 *db;
+
+void InitDatabase();
 void SauvegarderListe();
 void LoadEtudiants();
-void ViderListe();
-void enregistrer_log(const char* message); // Fixed: changed 'cont' to 'const'
+void enregistrer_log(const char* message);
 
 #endif
